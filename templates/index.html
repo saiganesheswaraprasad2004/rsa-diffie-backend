@@ -14,6 +14,8 @@
     <p id="rsaResult"></p>
 
     <h2>Diffie-Hellman Key Exchange</h2>
+    <input type="number" id="privateKeyA" placeholder="Enter Private Key A">
+    <input type="number" id="privateKeyB" placeholder="Enter Private Key B">
     <button onclick="runDiffieHellman()">Run Diffie-Hellman</button>
     <p id="dhResult"></p>
 
@@ -38,7 +40,20 @@
         }
 
         async function runDiffieHellman() {
-            const response = await fetch(`${API_BASE}/diffie-hellman`);
+            const privateKeyA = document.getElementById("privateKeyA").value;
+            const privateKeyB = document.getElementById("privateKeyB").value;
+
+            if (!privateKeyA || !privateKeyB) {
+                alert("Please enter both private keys.");
+                return;
+            }
+
+            const response = await fetch(`${API_BASE}/diffie-hellman`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ private_key_a: privateKeyA, private_key_b: privateKeyB })
+            });
+
             const data = await response.json();
             document.getElementById("dhResult").innerText = `Shared Secret Key: ${data.shared_secret}`;
         }
