@@ -18,13 +18,10 @@ def rsa_demo(message):
     
     return encrypted_msg.hex(), decrypted_msg.decode()
 
-# Diffie-Hellman Key Exchange
-def diffie_hellman_demo():
+# Diffie-Hellman Key Exchange with User-Provided Private Keys
+def diffie_hellman_demo(a, b):
     p = 23  # Prime number
     g = 5   # Primitive root
-    
-    a = random.randint(1, p-1)
-    b = random.randint(1, p-1)
     
     A = (g ** a) % p
     B = (g ** b) % p
@@ -32,7 +29,7 @@ def diffie_hellman_demo():
     shared_secret_A = (B ** a) % p
     shared_secret_B = (A ** b) % p
     
-    return shared_secret_A
+    return shared_secret_A if shared_secret_A == shared_secret_B else "Key Mismatch"
 
 @app.route("/")
 def home():
@@ -42,12 +39,17 @@ def home():
 def rsa():
     data = request.get_json()
     message = data.get("message", "")
+    
     encrypted, decrypted = rsa_demo(message)
     return jsonify({"encrypted": encrypted, "decrypted": decrypted})
 
-@app.route("/diffie-hellman", methods=["GET"])
+@app.route("/diffie-hellman", methods=["POST"])
 def diffie_hellman():
-    secret = diffie_hellman_demo()
+    data = request.get_json()
+    a = int(data.get("private_key_a", random.randint(1, 22)))
+    b = int(data.get("private_key_b", random.randint(1, 22)))
+    
+    secret = diffie_hellman_demo(a, b)
     return jsonify({"shared_secret": secret})
 
 if __name__ == "__main__":
