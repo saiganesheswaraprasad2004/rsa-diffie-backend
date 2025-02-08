@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSA & Diffie-Hellman Demo</title>
+</head>
+<body>
+    <h1>RSA & Diffie-Hellman Key Exchange</h1>
+
+    <h2>RSA Encryption</h2>
+    <input type="text" id="rsaMessage" placeholder="Enter message">
+    <button onclick="runRSA()">Run RSA</button>
+    <p id="rsaResult"></p>
+
+    <h2>Diffie-Hellman Key Exchange</h2>
+    <button onclick="runDiffieHellman()">Run Diffie-Hellman</button>
+    <p id="dhResult"></p>
+
+    <script>
+        const API_BASE = "https://your-app.onrender.com";  // Change this after deploying on Render
+
+        async function runRSA() {
+            const message = document.getElementById("rsaMessage").value;
+            if (!message) {
+                alert("Please enter a message.");
+                return;
+            }
+
+            const response = await fetch(`${API_BASE}/rsa`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message })
+            });
+
+            const data = await response.json();
+            document.getElementById("rsaResult").innerText = `Encrypted: ${data.encrypted}\nDecrypted: ${data.decrypted}`;
+        }
+
+        async function runDiffieHellman() {
+            const response = await fetch(`${API_BASE}/diffie-hellman`);
+            const data = await response.json();
+            document.getElementById("dhResult").innerText = `Shared Secret Key: ${data.shared_secret}`;
+        }
+    </script>
+</body>
+</html>
